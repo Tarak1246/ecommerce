@@ -1,6 +1,0 @@
-[submodule "client"]
-	path = client
-	url = https://github.com/Tarak1246/ecommerce.git
-[submodule "server"]
-	path = server
-	url = https://github.com/Tarak1246/ecommerce.git
