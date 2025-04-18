@@ -2,17 +2,21 @@ import { UserService } from '../../services/UserService';
 import { signupSchema, loginSchema } from '../../validators/user';
 import { IUser } from '../../models/User';
 import { IContext } from '../../types/context';
+import { UnauthorizedError } from '../../utils/error';
 
 export const userResolvers = {
   Query: {
     me: async (_: any, __: any, context: IContext): Promise<IUser | null> => {
-      if (!context.user) throw new Error('Not authenticated');
+      if (!context.user) {
+        throw new UnauthorizedError('Not authenticated');
+      }
       return await UserService.getMe(context.user.id);
     }
   },
   Mutation: {
     signup: async (_: any, { userInput }: any): Promise<any> => {
       const { error } = signupSchema.validate(userInput);
+      console.log(error);
       if (error) throw new Error(error.details[0].message);
       return await UserService.signup(userInput);
     },
