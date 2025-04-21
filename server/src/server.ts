@@ -1,20 +1,13 @@
 import { ApolloServer, ApolloError } from 'apollo-server';
 import { config } from 'dotenv';
 import { connectDB } from './config/db';
-import { userTypeDefs } from './graphql/schema/user';
-import { userResolvers } from './graphql/resolvers/user';
-import { makeExecutableSchema } from '@graphql-tools/schema';
+import { schema } from './graphql';
 import { verifyToken } from './utils/jwt';
 import { IContext } from './types/context';
 import { logger } from './utils/logger';
 import { AppError } from './utils/error';
 config();
 connectDB();
-
-const schema = makeExecutableSchema({
-  typeDefs: [userTypeDefs],
-  resolvers: [userResolvers]
-});
 
 const server = new ApolloServer({
   schema,
