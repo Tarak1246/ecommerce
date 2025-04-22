@@ -2,6 +2,7 @@ import { ProductModel } from '../../models/Product';
 import { createProductSchema, updateProductSchema } from '../../validators/product';
 import { BadRequestError, UnauthorizedError, NotFoundError } from '../../utils/error';
 import { IContext } from '../../types/context';
+import { isValidObjectId } from '../../utils/validateObjectId';
 
 export const productResolvers = {
   Query: {
@@ -56,6 +57,10 @@ export const productResolvers = {
         throw new UnauthorizedError('Only admins can update products');
       }
 
+      if (!isValidObjectId(id)) {
+        throw new BadRequestError('Invalid product ID');
+      }
+
       const { error, value } = updateProductSchema.validate(input);
       if (error) throw new BadRequestError(error.details[0].message);
 
@@ -67,6 +72,10 @@ export const productResolvers = {
     deleteProduct: async (_: any, { id }: any, context: IContext) => {
       if (!context.user || context.user.role !== 'admin') {
         throw new UnauthorizedError('Only admins can delete products');
+      }
+
+      if (!isValidObjectId(id)) {
+        throw new BadRequestError('Invalid product ID');
       }
 
       const deleted = await ProductModel.findByIdAndUpdate(id, { isActive: false });

@@ -27,6 +27,7 @@
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.9",
+    "apollo-server-testing": "^2.25.3",
     "jest": "^29.7.0",
     "mongodb-memory-server": "^10.1.4",
     "supertest": "^7.1.0",

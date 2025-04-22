@@ -1,17 +1,13 @@
-/** @type {import('ts-jest').JestConfigWithTsJest} */
+// jest.config.js
 module.exports = {
-    preset: 'ts-jest',
-    testEnvironment: 'node',
-    testTimeout: 20000, // Set global timeout (20s)
-    setupFilesAfterEnv: ['<rootDir>/src/tests/setup.ts'],
-    roots: ['<rootDir>/src'],
-    moduleFileExtensions: ['ts', 'js', 'json'],
-    testMatch: ['**/*.test.ts'],
-    transform: {
-      '^.+\\.ts$': 'ts-jest'
-    },
-    collectCoverage: true,
-    coverageDirectory: 'coverage',
-    coverageReporters: ['text', 'lcov'],
-  };
-  
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  setupFilesAfterEnv: ['<rootDir>/src/tests/setup.ts'],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+  transform: { '^.+\\.ts$': 'ts-jest' },
+  moduleFileExtensions: ['ts', 'js', 'json'],
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov'],
+  testTimeout: 20000,
+};
