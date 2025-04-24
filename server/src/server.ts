@@ -24,7 +24,7 @@ const server = new ApolloServer({
   },
   formatError: (err) => {
     const error = err.originalError;
-
+    console.error('[GraphQL Error]', err);
     // Log everything
     logger.error(err);
 
