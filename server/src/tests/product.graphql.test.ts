@@ -3,7 +3,9 @@ import { schema } from '../graphql';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { ProductModel } from '../models/Product';
+import { Types } from 'mongoose';
 
+const testUserId = new Types.ObjectId();
 let server: ApolloServer;
 let mongo: MongoMemoryServer;
 
@@ -16,7 +18,7 @@ beforeAll(async () => {
         schema,
         context: () => ({
             user: {
-                id: 'admin-user-id',
+                id: testUserId.toHexString(),
                 email: 'admin@example.com',
                 role: 'admin'
             }
