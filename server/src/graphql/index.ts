@@ -5,8 +5,10 @@ import { productTypeDefs } from './schema/product';
 import { productResolvers } from './resolvers/product';
 import { cartTypeDefs } from './schema/cart';
 import { cartResolvers } from './resolvers/cart';
+import { orderTypeDefs } from './schema/order';
+import { orderResolvers } from './resolvers/order';
 
 export const schema = makeExecutableSchema({
-  typeDefs: [userTypeDefs, productTypeDefs, cartTypeDefs],
-  resolvers: [userResolvers, productResolvers, cartResolvers]
+  typeDefs: [userTypeDefs, productTypeDefs, cartTypeDefs, orderTypeDefs],
+  resolvers: [userResolvers, productResolvers, cartResolvers, orderResolvers],
 });
