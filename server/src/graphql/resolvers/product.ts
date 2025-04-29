@@ -3,6 +3,9 @@ import { createProductSchema, updateProductSchema } from '../../validators/produ
 import { BadRequestError, UnauthorizedError, NotFoundError } from '../../utils/error';
 import { IContext } from '../../types/context';
 import { isValidObjectId } from '../../utils/validateObjectId';
+import slugify from 'slugify';
+
+const ALLOWED_SORT_FIELDS = ['price', 'createdAt', 'name'];
 
 export const productResolvers = {
   Query: {
@@ -12,23 +15,31 @@ export const productResolvers = {
       return product;
     },
 
-    getProducts: async (_: any, { filter }: any) => {
+    getProducts: async (_: any, { filter = {} }: any) => {
       const query: any = { isActive: true };
 
-      if (filter?.search) {
+      if (filter.search) {
         query.name = { $regex: filter.search, $options: 'i' };
       }
-      if (filter?.category) query.category = filter.category;
-      if (filter?.minPrice || filter?.maxPrice) {
+      if (filter.category) {
+        if (!isValidObjectId(filter.category)) throw new BadRequestError('Invalid category ID');
+        query.category = filter.category;
+      }
+      if (filter.minPrice || filter.maxPrice) {
         query.price = {};
         if (filter.minPrice) query.price.$gte = filter.minPrice;
         if (filter.maxPrice) query.price.$lte = filter.maxPrice;
       }
 
+      if (filter.limit && filter.limit < 0) throw new BadRequestError('Limit cannot be negative');
+      if (filter.offset && filter.offset < 0) throw new BadRequestError('Offset cannot be negative');
+
+      const sortField = filter.sortBy && ALLOWED_SORT_FIELDS.includes(filter.sortBy) ? filter.sortBy : 'createdAt';
+
       const products = await ProductModel.find(query)
-        .sort(filter?.sortBy ? { [filter.sortBy]: 1 } : { createdAt: -1 })
-        .skip(filter?.offset || 0)
-        .limit(filter?.limit || 10)
+        .sort({ [sortField]: 1 })
+        .skip(filter.offset || 0)
+        .limit(filter.limit || 10);
 
       return products;
     }
@@ -43,12 +54,24 @@ export const productResolvers = {
       const { error, value } = createProductSchema.validate(input);
       if (error) throw new BadRequestError(error.details[0].message);
 
-      const existing = await ProductModel.findOne({ name: value.name });
-      if (existing) throw new BadRequestError('Product with this name already exists');
+      const existingName = await ProductModel.findOne({ name: value.name });
+      if (existingName) throw new BadRequestError('Product with this name already exists');
 
-      const product = new ProductModel(value);
+      const slug = slugify(value.name, { lower: true });
+
+      const existingSlug = await ProductModel.findOne({ slug });
+      if (existingSlug) throw new BadRequestError('Slug conflict, please choose a different name');
+
+      if (value.stock === 0) {
+        value.isActive = false;
+      }
+
+      const product = new ProductModel({
+        ...value,
+        slug
+      });
+
       await product.save();
-
       return product;
     },
 
@@ -63,6 +86,14 @@ export const productResolvers = {
 
       const { error, value } = updateProductSchema.validate(input);
       if (error) throw new BadRequestError(error.details[0].message);
+
+      if (Object.keys(value).length === 0) {
+        throw new BadRequestError('Update input cannot be empty');
+      }
+
+      if (value.stock !== undefined) {
+        value.isActive = value.stock > 0;
+      }
 
       const updated = await ProductModel.findByIdAndUpdate(id, value, { new: true });
       if (!updated) throw new NotFoundError('Product not found');

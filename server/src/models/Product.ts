@@ -2,15 +2,14 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IProduct extends Document {
     name: string;
-    slug: string;
     description: string;
     price: number;
     stock: number;
-    category: string;
-    images?: string[];
     isActive: boolean;
-    createdAt: Date;
-    updatedAt: Date;
+    slug: string;
+    images: string[];
+    category: mongoose.Schema.Types.ObjectId;
+    averageRating: number;
 }
 
 const productSchema = new Schema<IProduct>({
@@ -19,7 +18,7 @@ const productSchema = new Schema<IProduct>({
     description: { type: String, required: true },
     price: { type: Number, required: true, min: 0 },
     stock: { type: Number, required: true, min: 0 },
-    category: { type: String, required: true, index: true },
+    category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
     images: [{ type: String }],
     isActive: { type: Boolean, default: true }
 }, {

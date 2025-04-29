@@ -8,7 +8,8 @@ export const productTypeDefs = gql`
     description: String!
     price: Float!
     stock: Int!
-    category: String!
+    category: Category!
+    averageRating: Float
     images: [String]
     isActive: Boolean!
     createdAt: String!
@@ -17,11 +18,11 @@ export const productTypeDefs = gql`
 
   input ProductInput {
     name: String!
-    description: String!
+    description: String
     price: Float!
     stock: Int!
-    category: String!
-    images: [String]
+    images: [String!]
+    category: ID!
   }
 
   input ProductUpdateInput {
@@ -29,13 +30,13 @@ export const productTypeDefs = gql`
     description: String
     price: Float
     stock: Int
-    category: String
-    images: [String]
+    category: ID
+    images: [String!]
   }
 
   input ProductFilter {
     search: String
-    category: String
+    category: ID
     minPrice: Float
     maxPrice: Float
     sortBy: String
@@ -43,12 +44,12 @@ export const productTypeDefs = gql`
     offset: Int = 0
   }
 
-  extend type Query {
+  type Query {
     getProduct(slug: String!): Product
-    getProducts(filter: ProductFilter): [Product]
+    getProducts(filter: ProductFilter): [Product!]
   }
 
-  extend type Mutation {
+  type Mutation {
     createProduct(input: ProductInput!): Product
     updateProduct(id: ID!, input: ProductUpdateInput!): Product
     deleteProduct(id: ID!): Boolean
