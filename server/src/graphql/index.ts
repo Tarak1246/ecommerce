@@ -9,8 +9,10 @@ import { orderTypeDefs } from './schema/order';
 import { orderResolvers } from './resolvers/order';
 import {  reviewTypeDefs } from './schema/review';
 import { reviewResolvers } from './resolvers/review';
+import { categoryTypeDefs } from './schema/category';
+import { categoryResolvers } from './resolvers/category';
 
 export const schema = makeExecutableSchema({
-  typeDefs: [userTypeDefs, productTypeDefs, cartTypeDefs, orderTypeDefs, reviewTypeDefs],
-  resolvers: [userResolvers, productResolvers, cartResolvers, orderResolvers, reviewResolvers],
+  typeDefs: [userTypeDefs, productTypeDefs, cartTypeDefs, orderTypeDefs, reviewTypeDefs, categoryTypeDefs],
+  resolvers: [userResolvers, productResolvers, cartResolvers, orderResolvers, reviewResolvers, categoryResolvers],
 });
