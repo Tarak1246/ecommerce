@@ -1,9 +1,9 @@
-name: Azure Node.js App Deploy
+name: Azure Node.js Backend Deployment
 
 on:
   push:
     branches:
-      - main  # or replace with your branch name
+      - main  # or your default branch
 
 jobs:
   build-and-deploy:
@@ -20,10 +20,15 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
+        working-directory: server
+
+      - name: Build App
+        run: npm run build || echo "No build step defined"
+        working-directory: server
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'taraka-node-api'  # Replace with your app name
+          app-name: 'taraka-node-api'  # your Azure Web App name
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: .
+          package: server
